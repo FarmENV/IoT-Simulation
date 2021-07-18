@@ -1,38 +1,67 @@
 import requests
 import random
-import json
 import time
+from datetime import datetime
 
-option = True
-temp = 30
+''' Variables with the data the sensors should start '''
+temp = 30.0
 food = 3000
+airQuality=(random.choice(["Good","Bad"]))
+lastTemp = 30
+lastAirQuality = "Good"
 
+now = datetime.now()
+date = now.strftime("%d/%m/%Y %H:%M:%S")
+
+# The arduino ID, hardcoded in each installed system
 arduinoId = "arduinoid1"
 
-while option:
+''' Request that runs when the system is turned on '''
+REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/arduinoPost/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}&date={date}"
+_request = requests.get(REQUEST_URL)
+print(_request.text)
 
-    temp = random.randrange(temp-2, temp+3)
-    if temp > 45:
-        temp = 45
+''' This function checks if there is an important 
+change in the sensors since the last measurement '''
+def checkLast(temp, airQuality, lastTemp, lastAirQuality):
 
+    if(airQuality!=lastAirQuality):
+        return True
+    elif((lastTemp-temp)>=1 or (temp-lastTemp)>=1):
+        return True
+    else:
+        return False
+
+''' Loop to run the sensors simulation every 3 seconds '''
+while True:
+
+    temp = round(random.uniform(temp-3, temp+3),2)
+    if temp > 50:
+        temp = 50
+    elif temp < -15:
+        temp = -15
+    
     food = random.randrange(food-5,food)
     if food < 0:
         food = 0
 
     airQuality=(random.choice(["Good","Bad"]))
+    
+    now = datetime.now()
+    date = now.strftime("%d/%m/%Y %H:%M:%S")
 
-    """ The request for the data """
-    REQUEST_URL = f"http://127.0.0.1:5000/option/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}"
-    _request = requests.get(REQUEST_URL)
-    print(_request.text)
+    ''' If there is an important change in the sensors data
+    it sends the data to the API '''
+    if(checkLast(temp,airQuality, lastTemp, lastAirQuality)):
+        """ The request for the data """
+        REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/option/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}&date={date}"
+        _request = requests.get(REQUEST_URL)
+        print(_request.text)
 
+    # The variables for the last measurement are updated
+    lastAirQuality = airQuality
+    lastFood = food
+    lastTemp = temp
 
-    """ Data obtained from the json """
-    """ data = json.loads(_request.text)
-    data_id = data['arduinoId']
-    data_temp = data['temp']
-    data_food = data['food']
-    data_air = data['airQuality'] """
-
-
+    # Three seconds to start the next measurement
     time.sleep(3)
