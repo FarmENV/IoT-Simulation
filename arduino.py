@@ -17,7 +17,7 @@ date = now.strftime("%d/%m/%Y %H:%M:%S")
 arduinoId = "arduinoid1"
 
 ''' Request that runs when the system is turned on '''
-REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/arduinoPost/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}&date={date}"
+REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/arduinoPost/?arduinoId={arduinoId}&date={date}"
 _request = requests.get(REQUEST_URL)
 print(_request.text)
 
