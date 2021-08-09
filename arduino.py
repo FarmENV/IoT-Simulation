@@ -5,6 +5,7 @@ from datetime import datetime
 
 ''' Variables with the data the sensors should start '''
 temp = 30.0
+humidity = 80
 food = 3000
 airQuality=(random.choice(["Good","Bad"]))
 lastTemp = 30
@@ -14,7 +15,7 @@ now = datetime.now()
 date = now.strftime("%d/%m/%Y %H:%M:%S")
 
 # The arduino ID, hardcoded in each installed system
-arduinoId = "arduinoid1"
+arduinoId = "arduinoid3"
 
 ''' Request that runs when the system is turned on '''
 REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/arduinoPost/?arduinoId={arduinoId}&date={date}"
@@ -40,12 +41,18 @@ while True:
         temp = 50
     elif temp < -15:
         temp = -15
+
+    humidity = round(random.uniform(humidity-3, humidity+3),0)
+    if humidity > 100:
+        humidity = 100
+    elif humidity < 0:
+        humidity = 0
     
     food = random.randrange(food-5,food)
     if food < 0:
         food = 0
 
-    airQuality=(random.choice(["Good","Bad"]))
+    airQuality=(random.choice(["Buena","Mala"]))
     
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
@@ -54,7 +61,7 @@ while True:
     it sends the data to the API '''
     if(checkLast(temp,airQuality, lastTemp, lastAirQuality)):
         """ The request for the data """
-        REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/option/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}&date={date}"
+        REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/option/?arduinoId={arduinoId}&temp={temp}&food={food}&airQuality={airQuality}&date={date}&humidity={humidity}"
         _request = requests.get(REQUEST_URL)
         print(_request.text)
 
