@@ -6,7 +6,7 @@ from datetime import datetime
 ''' Variables with the data the sensors should start '''
 temp = 30.0
 humidity = 80
-food = 3000
+food = 48
 airQuality=(random.choice(["Good","Bad"]))
 lastTemp = 30
 lastAirQuality = "Good"
@@ -15,7 +15,7 @@ now = datetime.now()
 date = now.strftime("%d/%m/%Y %H:%M:%S")
 
 # The arduino ID, hardcoded in each installed system
-arduinoId = "arduinoid3"
+arduinoId = "arduinoid1"
 
 ''' Request that runs when the system is turned on '''
 REQUEST_URL = f"https://api-iot-farmenv.herokuapp.com/arduinoPost/?arduinoId={arduinoId}&date={date}"
@@ -52,7 +52,7 @@ while True:
     if food < 0:
         food = 0
 
-    airQuality=(random.choice(["Buena","Mala"]))
+    airQuality=(random.choice(["Buena","Regular","Mala","¡Peligro!"]))
     
     now = datetime.now()
     date = now.strftime("%d/%m/%Y %H:%M:%S")
